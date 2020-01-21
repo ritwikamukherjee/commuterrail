@@ -1,0 +1,8 @@
+#numpy
+#matplotlib
+streamlit
+#scipy
+#hvplot
+#bokeh
+#holoviews
+#scikit-learn
