@@ -1,1 +1,1 @@
-streamlit run bigspoon.py
+web: streamlit run bigspoon.py
