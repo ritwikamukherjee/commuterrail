@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run bigspoon.py 
+web: sh setup.sh && streamlit run bigspoon.py apps
