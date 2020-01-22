@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run bigspoon.py apps
+web: sh setup.sh && streamlit run bigspoon.py --server.port $PORT
