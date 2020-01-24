@@ -5,14 +5,14 @@ import pandas as pd
 import pickle
 from datetime import datetime
 from datetime import date
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
+#import statsmodels.api as sm
+#import statsmodels.formula.api as smf
 from statistics import *
 
 st.title('Cracked Tracks')
 
 
-pkl_filename = 'C:/Users/ritwi/Documents/Commuter_Rails/REAL_DATA_v2.pkl'
+pkl_filename = 'C:/Users/ritwi/Documents/GitHub/commuterrail/REAL_DATA_v2.pkl'
 with open(pkl_filename, 'rb') as file:
     loaded_data = pickle.load(file)
 #st.write(loaded_data)
@@ -55,7 +55,7 @@ train_dict["Lag_Total_Hours_of_Service_Interruption"].append(df['Lag'])
 output = pd.DataFrame(df['Reliability'], df['Frequency'], df['Peak'], df['Lag'])
 print(output)
 
-pkl_filename = 'C:/Users/ritwi/Documents/Commuter_Rails/Commuter_basic_linear_fit.pkl'
+pkl_filename = 'C:/Users/ritwi/Documents/GitHub/commuterrail/Commuter_basic_linear_fit.pkl'
 with open(pkl_filename, 'rb') as file:
     pickle_model = pickle.load(file)
 prediction = pickle_model.predict(np.array([Train_df.iloc[-1,:].Reliability,Train_df.iloc[-1,:].Frequency,Train_df.iloc[-1,:].Peak,Train_df.iloc[-1,:].Lag]).reshape(1,4))
