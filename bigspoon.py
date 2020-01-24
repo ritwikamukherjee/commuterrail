@@ -31,8 +31,11 @@ for baseName in os.listdir(folder):
 @st.cache # cache
 def load_model(modelName):
 	#model = pd.read_pickle(os.path.join(folder, 'models', modelName + '.pkl'))
-	model = pd.read_pickle(str(modelName + '.pkl'))    
+    model = pd.read_pickle(str('./models' + modelName + '.pkl'))
+	#model = pd.read_pickle(str(modelName + '.pkl'))    
 	return model
+
+####how to write an address pd.read_pickle(str('./models' + modelName + '.pkl'))
 
 # Load Model
 modelName='Commuter_basic_linear_fit'
