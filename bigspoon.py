@@ -30,7 +30,8 @@ for baseName in os.listdir(folder):
 # Function to load model
 @st.cache # cache
 def load_model(modelName):
-	model = pd.read_pickle(os.path.join(folder, 'models', modelName + '.pkl'))
+	#model = pd.read_pickle(os.path.join(folder, 'models', modelName + '.pkl'))
+	model = pd.read_pickle(str('/models/'+ modelName + '.pkl'))    
 	return model
 
 # Load Model
