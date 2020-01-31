@@ -18,7 +18,6 @@ import altair as alt
 import matplotlib.pyplot as plt
 import joblib
 
-
 if len(sys.argv) > 1:
     folder = os.path.abspath(sys.argv[1])
 else:
@@ -44,11 +43,9 @@ def load_model(modelName):
 ####how to write an address pd.read_pickle(str('./models' + modelName + '.pkl'))
 
 # Load Model
-modelName= 'Commuter_random_forest_regressor_trytry'      ###'Commuter_random_forest_regressor_trytry2';'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
+Random_forest= 'Commuter_random_forest_regressor_trytry'      ###'Commuter_random_forest_regressor_trytry2';'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
 #model = load_model(modelName)
-model1=joblib.load(str(modelName + '.joblib'))
-
-
+model1=joblib.load(str(Random_forest + '.joblib'))
 dataName = 'REAL_DATA_v6'
 data = load_model(dataName)
 
@@ -67,10 +64,6 @@ st.title('Stay on Track!')
 #st.write(user_input)
 #user_input 
 #print(data)
-Data = pd.DataFrame(data)
-today = datetime.datetime.today()
-my_date = date.today()
-Weekday_name = calendar.day_name[my_date.weekday()]
 #user_input2=st.selectbox('Which commuter rail?', Data['Trains'].unique())
 #st.write(user_input2)
 
@@ -78,12 +71,6 @@ Weekday_name = calendar.day_name[my_date.weekday()]
 #month = pd.to_datetime(prediction, format = '%j').month
 #day = pd.to_datetime(prediction, format = '%j').day
 #st.write(calendar.month_name[month], day, user_input2)
-dict_trains = {'CR-Fairmount':[0], 'CR-Fitchburg':[0], 'CR-Franklin':[0], 'CR:Greenbush' :[0], 'CR-Haverhill' :[0],
-                                        'CR-Kingston' :[0], 'CR-Lowell':[0], 'CR-Lowell' :[0], 'CR-Middleborough':[0], 'CR-Needham':[0],
-                                        'CR-Newburyport':[0], 'CR-Providence':[0], 'CR-Worcester':[0]}
-
-dict_others = {'2017':[0], '2018':[0], '2019':[0],'1':[0], '2':[0], '3':[0], '4':[0],	'5':[0],	'6':[0],'7':[0], '8':[0],'9':[0], '10':[0],'11':[0],'12':[0], 'Friday':[0],
-	'Monday':[0],	'Saturday':[0], 'Sunday':[0], 'Thursday':[0], 'Tuesday':[0], 'Wednesday':[0]}
 
 #Windows of peak hours: 
 x1=datetime.time(7,00,00)
@@ -104,6 +91,17 @@ lets_go = st.button ("Go")
 
 
 if lets_go is not None:
+    Data = pd.DataFrame(data)
+    today = datetime.datetime.today()
+    my_date = date.today()
+    Weekday_name = calendar.day_name[my_date.weekday()]
+    dict_trains = {'CR-Fairmount':[0], 'CR-Fitchburg':[0], 'CR-Franklin':[0], 'CR:Greenbush' :[0], 'CR-Haverhill' :[0],
+                                        'CR-Kingston' :[0], 'CR-Lowell':[0], 'CR-Lowell' :[0], 'CR-Middleborough':[0], 'CR-Needham':[0],
+                                        'CR-Newburyport':[0], 'CR-Providence':[0], 'CR-Worcester':[0]}
+
+    dict_others = {'2017':[0], '2018':[0], '2019':[0],'1':[0], '2':[0], '3':[0], '4':[0],	'5':[0],	'6':[0],'7':[0], '8':[0],'9':[0], '10':[0],'11':[0],'12':[0], 'Friday':[0],
+	'Monday':[0],	'Saturday':[0], 'Sunday':[0], 'Thursday':[0], 'Tuesday':[0], 'Wednesday':[0]}
+    
     Train_df = pd.DataFrame()
     Train_df = pd.DataFrame()
     for train in set(data['Trains']):
@@ -164,8 +162,7 @@ if lets_go is not None:
             features4 = new_df.iloc[0,:].values.reshape(1,34)
             features = np.concatenate((feature1, feature2,features3,features4), axis = None).reshape(1,48)
             
-            
-            
+
             prediction = model1.predict(features)
             output =(prediction.item(0)) * 60
                 #mask=peakmask & outboundmask
