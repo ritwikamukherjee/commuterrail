@@ -151,46 +151,52 @@ def main():
             features3 = np.array([Reliability, Frequency,Peak,Outbound, Inbound, Temperature, Snow, Wind,Prcp,Ridership_2018,Lag,Snowlag]).reshape(1,12)
             features4 = new_df.iloc[0,:].values.reshape(1,34)
             features = np.concatenate((feature1, feature2,features3,features4), axis = None).reshape(1,48)
-            prediction = model.predict(features)
-            output =(prediction.item(0)) * 60
-                #mask=peakmask & outboundmask
-                #df_of_interest = Train_df[mask] #this has all the other variables in case we want to plot something
-            #st.write(today)
-            #prediction = model.predict(np.array([Train_df.iloc[-1,:].Reliability,Train_df.iloc[-1,:].Frequency,Train_df.iloc[-1,:].Peak,Train_df.iloc[-1,:].Lag]).reshape(1,4))
-            st.write(f"{train_input} is going to be down for {round(output, 2)} minutes tomorrow in the next four hours.")
             
-            time_axis = np.array([0, 4, 8, 12, 16, 20, 24])
-            #time_axis = pd.DataFrame({time_axis)
-            y_axis = list()
-            ticklist = list()
-            for i in range(0, len(time_axis)):
-                ticklist.append(f"{i*4}:00:00")
-                feature_hour = time_axis[i] #numpy array
+            lets_go = None
+            lets_go = st.button ("Go")
+            
+            if  lets_go is not None:
                 
-                #st.write((feature_hour))
-                features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
-                pred = model.predict(features_hour)
-                y_axis.append(pred.item(0)*60)
-                y_axis2 = np.array(y_axis)
-                #st.write(len(y_axis2.flatten()))
-            #st.write(y_axis2)
-            #fig, ax = plt.subplots()
-            #ax.plot(time_axis, y_axis2)
-            ##ax.set_xlim([0,25])
-            #ax.set_ylim([0,120])
-            #ax.set_xticklabels(ticklist)
-            #ax.set_xlabel("Time of day")
-            #ax.set_ylabel("Duration of service interruption (min)") 
-            
-            source = pd.DataFrame({'Hour of day': time_axis, 'Estimated service interruption (min)': y_axis2})
-            chart = alt.Chart(source).mark_line().encode(x='Hour of day',y='Estimated service interruption (min)').properties(width=900,
-                        height=500)
-    
-
-            st.altair_chart(chart)
-            #st.line_chart(source)
-            st.pyplot()
+                prediction = model.predict(features)
+                output =(prediction.item(0)) * 60
+                    #mask=peakmask & outboundmask
+                    #df_of_interest = Train_df[mask] #this has all the other variables in case we want to plot something
+                #st.write(today)
+                #prediction = model.predict(np.array([Train_df.iloc[-1,:].Reliability,Train_df.iloc[-1,:].Frequency,Train_df.iloc[-1,:].Peak,Train_df.iloc[-1,:].Lag]).reshape(1,4))
+                st.write(f"{train_input} is going to be down for {round(output, 2)} minutes tomorrow in the next four hours.")
+                
+                time_axis = np.array([0, 4, 8, 12, 16, 20, 24])
+                #time_axis = pd.DataFrame({time_axis)
+                y_axis = list()
+                ticklist = list()
+                for i in range(0, len(time_axis)):
+                    ticklist.append(f"{i*4}:00:00")
+                    feature_hour = time_axis[i] #numpy array
                     
+                    #st.write((feature_hour))
+                    features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
+                    pred = model.predict(features_hour)
+                    y_axis.append(pred.item(0)*60)
+                    y_axis2 = np.array(y_axis)
+                    #st.write(len(y_axis2.flatten()))
+                #st.write(y_axis2)
+                #fig, ax = plt.subplots()
+                #ax.plot(time_axis, y_axis2)
+                ##ax.set_xlim([0,25])
+                #ax.set_ylim([0,120])
+                #ax.set_xticklabels(ticklist)
+                #ax.set_xlabel("Time of day")
+                #ax.set_ylabel("Duration of service interruption (min)") 
+                
+                source = pd.DataFrame({'Hour of day': time_axis, 'Estimated service interruption (min)': y_axis2})
+                chart = alt.Chart(source).mark_line().encode(x='Hour of day',y='Estimated service interruption (min)').properties(width=900,
+                            height=500)
+        
+
+                st.altair_chart(chart)
+                #st.line_chart(source)
+                st.pyplot()
+                        
                 
                 
                             
