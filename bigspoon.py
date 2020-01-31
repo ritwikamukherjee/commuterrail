@@ -16,6 +16,8 @@ import calendar
 import seaborn as sns
 import altair as alt
 import matplotlib.pyplot as plt
+import joblib
+
 
 if len(sys.argv) > 1:
     folder = os.path.abspath(sys.argv[1])
@@ -42,8 +44,10 @@ def load_model(modelName):
 ####how to write an address pd.read_pickle(str('./models' + modelName + '.pkl'))
 
 # Load Model
-modelName='Commuter_random_forest_regressor_trytry2'     #'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
-model = load_model(modelName)
+modelName= 'Commuter_random_forest_regressor_trytry'      ###'Commuter_random_forest_regressor_trytry2';'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
+#model = load_model(modelName)
+model1=joblib.load(str(modelName + '.joblib'))
+
 
 dataName = 'REAL_DATA_v6'
 data = load_model(dataName)
@@ -88,7 +92,6 @@ x3=datetime.time(16,00,00)
 x4=datetime.time(19,00,00)
 #########
 
-
 train_input = st.selectbox("Choose your commuter rail", data['Trains'].unique())
 
 time_input = st.radio("Choose your time of travel:", ['12:00:00 AM', '2:00:00 AM', '4:00:00 AM', '6:00:00 AM', '8:00:00 AM', '10:00:00 AM', '12:00:00 PM', '2:00:00 PM',
@@ -97,6 +100,8 @@ direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outb
 
 lets_go = None
 lets_go = st.button ("Go")
+
+
 
 if lets_go is not None:
     Train_df = pd.DataFrame()
@@ -161,7 +166,7 @@ if lets_go is not None:
             
             
             
-            prediction = model.predict(features)
+            prediction = model1.predict(features)
             output =(prediction.item(0)) * 60
                 #mask=peakmask & outboundmask
                 #df_of_interest = Train_df[mask] #this has all the other variables in case we want to plot something
