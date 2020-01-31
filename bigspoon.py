@@ -23,7 +23,7 @@ if len(sys.argv) > 1:
 else:
     folder = os.path.abspath(os.getcwd())
 
-
+#@st.cache
 # Get filenames for all python files in this path, excluding this script
 thisFile = os.path.abspath(__file__)
 fileNames = []
@@ -43,9 +43,9 @@ def load_model(modelName):
 ####how to write an address pd.read_pickle(str('./models' + modelName + '.pkl'))
 
 # Load Model
-Random_forest= 'Commuter_random_forest_regressor_trytry'      ###'Commuter_random_forest_regressor_trytry2';'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
-#model = load_model(modelName)
-model1=joblib.load(str(Random_forest + '.joblib'))
+Random_forest= 'Commuter_random_forest_regressor_trytry2' # 'Commuter_random_forest_regressor_trytry'      ###'Commuter_random_forest_regressor_trytry2';'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
+model = load_model(modelName)
+#model1=joblib.load(str(Random_forest + '.joblib'))
 dataName = 'REAL_DATA_v6'
 data = load_model(dataName)
 
@@ -163,7 +163,7 @@ if lets_go is not None:
             features = np.concatenate((feature1, feature2,features3,features4), axis = None).reshape(1,48)
             
 
-            prediction = model1.predict(features)
+            prediction = model.predict(features)
             output =(prediction.item(0)) * 60
                 #mask=peakmask & outboundmask
                 #df_of_interest = Train_df[mask] #this has all the other variables in case we want to plot something
