@@ -90,72 +90,75 @@ x4=datetime.time(19,00,00)
 
 def main():
     train_input = st.selectbox("Choose your commuter rail", data['Trains'].unique())
-    Train_df = pd.DataFrame()
-    for train in set(data['Trains']):
-        if train_input == train:
-            mask = Data["Trains"] == train
-            Train_df = Data[mask]
-            #st.write(Train_df)
-            #if st.button('Click here'):
-            st.header(f"So, you are traveling on {train_input} tomorrow.")
-            st.write("What time were you thinking to travel?")
-            #st.write(df)
-            #peak_input = st.sidebar.selectbox("Choose peak/non-peak hour", ['Peak', 'Non-peak'])
-            time_input = st.radio("Choose your time of travel:", ['12:00:00 AM', '2:00:00 AM', '4:00:00 AM', '6:00:00 AM', '8:00:00 AM', '10:00:00 AM', '12:00:00 PM', '2:00:00 PM',
+    
+    time_input = st.radio("Choose your time of travel:", ['12:00:00 AM', '2:00:00 AM', '4:00:00 AM', '6:00:00 AM', '8:00:00 AM', '10:00:00 AM', '12:00:00 PM', '2:00:00 PM',
                                                             '4:00:00 PM', '6:00:00 PM','8:00:00 PM', '10:00:00 PM'])
-            direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outbound'])
-            
-            #time_input = st.sidebar.selectbox("Choose your time of travel", ['12:00:00 AM', '2:00:00 AM', '4:00:00 AM', '6:00:00 AM', '8:00:00 AM', '10:00:00 AM', '12:00:00 PM', '2:00:00 PM',
-             #                                               '4:00:00 PM', '6:00:00 PM','8:00:00 PM', '10:00:00 PM'])                                              
-            
-            #direction_input = st.sidebar.selectbox("Choose inbound/outbound", ['Inbound', 'Outbound'])
-            travel_time = pd.to_datetime(time_input)
-            Day = today.day +1
-            Hour = travel_time.hour
-            for key in dict_trains.keys():
-                if key == train:
-                    dict_trains[key] = [1]    
-            for key in dict_others.keys():
-                if key == 2019:
-                    dict_others[key] = [1]
-                if key == [1]:
-                    dict_others[key] = [1]
-                if key == Day:
-                    dict_others[key] = [1] 
-            Reliability = Train_df.iloc[-1,:].Reliability
-            Frequency = Train_df.iloc[-1,:].Frequency
-            Temperature = 39.2
-            Snow = 0
-            Wind =5.75
-            Prcp = 2
-            Ridership_2018 = Train_df.iloc[-1,:].Ridership_2018
-            Lag = Train_df.iloc[-1,:].Lag
-            Snowlag = 0
-           
-            if (x1.hour <= travel_time.hour <= x2.hour) or (x3.hour <= travel_time.hour <= x4.hour):
-                Peak = 1
-            else:
-                Peak = 0
-            if direction_input == 'Outbound':
-                Outbound = 1
-                Inbound = 0
-            if direction_input == 'Inbound':
-                Outbound = 0
-                Inbound = 1
-            new_df1 = pd.DataFrame(dict_trains)
-            new_df2 = pd.DataFrame(dict_others)            
-            new_df = pd.concat([new_df1, new_df2], axis=1)
-            #st.write(new_df)
-            feature1= np.array([Day]).ravel()
-            feature2=np.array([Hour]).ravel()
-            features3 = np.array([Reliability, Frequency,Peak,Outbound, Inbound, Temperature, Snow, Wind,Prcp,Ridership_2018,Lag,Snowlag]).reshape(1,12)
-            features4 = new_df.iloc[0,:].values.reshape(1,34)
-            features = np.concatenate((feature1, feature2,features3,features4), axis = None).reshape(1,48)
-            
-            lets_go = None
-            lets_go = st.button ("Go")
-            
-            if  lets_go is not None:
+    direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outbound'])
+    lets_go = None
+    lets_go = st.button ("Go")
+    
+    if lets_go is not None:
+        Train_df = pd.DataFrame()
+        Train_df = pd.DataFrame()
+        for train in set(data['Trains']):
+            if train_input == train:
+                mask = Data["Trains"] == train
+                Train_df = Data[mask]
+                #st.write(Train_df)
+                #if st.button('Click here'):
+                st.header(f"So, you are traveling on {train_input} tomorrow.")
+                st.write("What time were you thinking to travel?")
+                #st.write(df)
+                #peak_input = st.sidebar.selectbox("Choose peak/non-peak hour", ['Peak', 'Non-peak'])
+                
+                #time_input = st.sidebar.selectbox("Choose your time of travel", ['12:00:00 AM', '2:00:00 AM', '4:00:00 AM', '6:00:00 AM', '8:00:00 AM', '10:00:00 AM', '12:00:00 PM', '2:00:00 PM',
+                 #                                               '4:00:00 PM', '6:00:00 PM','8:00:00 PM', '10:00:00 PM'])                                              
+                
+                #direction_input = st.sidebar.selectbox("Choose inbound/outbound", ['Inbound', 'Outbound'])
+                travel_time = pd.to_datetime(time_input)
+                Day = today.day +1
+                Hour = travel_time.hour
+                for key in dict_trains.keys():
+                    if key == train:
+                        dict_trains[key] = [1]    
+                for key in dict_others.keys():
+                    if key == 2019:
+                        dict_others[key] = [1]
+                    if key == [1]:
+                        dict_others[key] = [1]
+                    if key == Day:
+                        dict_others[key] = [1] 
+                Reliability = Train_df.iloc[-1,:].Reliability
+                Frequency = Train_df.iloc[-1,:].Frequency
+                Temperature = 39.2
+                Snow = 0
+                Wind =5.75
+                Prcp = 2
+                Ridership_2018 = Train_df.iloc[-1,:].Ridership_2018
+                Lag = Train_df.iloc[-1,:].Lag
+                Snowlag = 0
+               
+                if (x1.hour <= travel_time.hour <= x2.hour) or (x3.hour <= travel_time.hour <= x4.hour):
+                    Peak = 1
+                else:
+                    Peak = 0
+                if direction_input == 'Outbound':
+                    Outbound = 1
+                    Inbound = 0
+                if direction_input == 'Inbound':
+                    Outbound = 0
+                    Inbound = 1
+                new_df1 = pd.DataFrame(dict_trains)
+                new_df2 = pd.DataFrame(dict_others)            
+                new_df = pd.concat([new_df1, new_df2], axis=1)
+                #st.write(new_df)
+                feature1= np.array([Day]).ravel()
+                feature2=np.array([Hour]).ravel()
+                features3 = np.array([Reliability, Frequency,Peak,Outbound, Inbound, Temperature, Snow, Wind,Prcp,Ridership_2018,Lag,Snowlag]).reshape(1,12)
+                features4 = new_df.iloc[0,:].values.reshape(1,34)
+                features = np.concatenate((feature1, feature2,features3,features4), axis = None).reshape(1,48)
+                
+                
                 
                 prediction = model.predict(features)
                 output =(prediction.item(0)) * 60
@@ -196,7 +199,7 @@ def main():
                 st.altair_chart(chart)
                 #st.line_chart(source)
                 st.pyplot()
-                        
+                    
                 
                 
                             
