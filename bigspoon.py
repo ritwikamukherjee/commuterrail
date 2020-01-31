@@ -43,7 +43,7 @@ def load_model(modelName):
 ####how to write an address pd.read_pickle(str('./models' + modelName + '.pkl'))
 
 # Load Model
-modelName='Commuter_random_forest_regressor_trytry'     #'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
+modelName='Commuter_random_forest_regressor_trytry2'     #'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
 model = load_model(modelName)
 
 dataName = 'REAL_DATA_v6'
