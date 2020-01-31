@@ -31,6 +31,7 @@ for baseName in os.listdir(folder):
 	if (fileName.endswith(".py")) and (fileName != thisFile):
 		fileNames.append(fileName)
 
+@st.cache
 
 # Function to load model # cache
 def load_model(modelName):
