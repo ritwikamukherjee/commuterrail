@@ -17,6 +17,7 @@ import seaborn as sns
 import altair as alt
 import matplotlib.pyplot as plt
 import joblib
+import lightgbm as lgb
 
 if len(sys.argv) > 1:
     folder = os.path.abspath(sys.argv[1])
