@@ -82,6 +82,9 @@ x4=datetime.time(19,00,00)
 
 train_input = st.selectbox("Choose your commuter rail", data['Trains'].unique())
 
+st.header(f"So, you are traveling on {train_input} tomorrow.")
+st.write("What time were you thinking to travel?")
+            
 time_input = st.radio("Choose your time of travel:", ['12:00:00 AM', '2:00:00 AM', '4:00:00 AM', '6:00:00 AM', '8:00:00 AM', '10:00:00 AM', '12:00:00 PM', '2:00:00 PM',
                                                         '4:00:00 PM', '6:00:00 PM','8:00:00 PM', '10:00:00 PM'])
 direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outbound'])
@@ -111,8 +114,7 @@ if lets_go is not None:
             Train_df = Data[mask]
             #st.write(Train_df)
             #if st.button('Click here'):
-            st.header(f"So, you are traveling on {train_input} tomorrow.")
-            st.write("What time were you thinking to travel?")
+            
             #st.write(df)
             #peak_input = st.sidebar.selectbox("Choose peak/non-peak hour", ['Peak', 'Non-peak'])
             
@@ -172,37 +174,37 @@ if lets_go is not None:
             #prediction = model.predict(np.array([Train_df.iloc[-1,:].Reliability,Train_df.iloc[-1,:].Frequency,Train_df.iloc[-1,:].Peak,Train_df.iloc[-1,:].Lag]).reshape(1,4))
             st.write(f"{train_input} is going to be down for {round(output, 2)} minutes tomorrow in the next four hours.")
             
-            # time_axis = np.array([0, 4, 8, 12, 16, 20, 24])
-            # #time_axis = pd.DataFrame({time_axis)
-            # y_axis = list()
-            # ticklist = list()
-            # for i in range(0, len(time_axis)):
-                # ticklist.append(f"{i*4}:00:00")
-                # feature_hour = time_axis[i] #numpy array
+            time_axis = np.array([Hour-2, Hour, Hour+2])
+            #time_axis = pd.DataFrame({time_axis)
+            y_axis = list()
+            ticklist = list()
+            for i in range(0, len(time_axis)):
+                ticklist.append(f"{time_axis[i]}:00:00")
+                feature_hour = time_axis[i] #numpy array
                 
-                # #st.write((feature_hour))
-                # features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
-                # pred = model.predict(features_hour)
-                # y_axis.append(pred.item(0)*60)
-                # y_axis2 = np.array(y_axis)
-                # #st.write(len(y_axis2.flatten()))
-            # #st.write(y_axis2)
-            # #fig, ax = plt.subplots()
-            # #ax.plot(time_axis, y_axis2)
-            # ##ax.set_xlim([0,25])
-            # #ax.set_ylim([0,120])
-            # #ax.set_xticklabels(ticklist)
-            # #ax.set_xlabel("Time of day")
-            # #ax.set_ylabel("Duration of service interruption (min)") 
+                #st.write((feature_hour))
+                features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
+                pred = model.predict(features_hour)
+                y_axis.append(pred.item(0)*60)
+                y_axis2 = np.array(y_axis)
+                #st.write(len(y_axis2.flatten()))
+            #st.write(y_axis2)
+            #fig, ax = plt.subplots()
+            #ax.plot(time_axis, y_axis2)
+            ##ax.set_xlim([0,25])
+            #ax.set_ylim([0,120])
+            #ax.set_xticklabels(ticklist)
+            #ax.set_xlabel("Time of day")
+            #ax.set_ylabel("Duration of service interruption (min)") 
             
-            # source = pd.DataFrame({'Hour of day': time_axis, 'Estimated service interruption (min)': y_axis2})
-            # chart = alt.Chart(source).mark_line().encode(x='Hour of day',y='Estimated service interruption (min)').properties(width=900,
-                        # height=500)
+            source = pd.DataFrame({'Hour of day': time_axis, 'Estimated service interruption (min)': y_axis2})
+            chart = alt.Chart(source).mark_line().encode(x='Hour of day',y='Estimated service interruption (min)').properties(width=900,
+                        height=500)
     
 
-            # st.altair_chart(chart)
-            # #st.line_chart(source)
-            # st.pyplot()
+            st.altair_chart(chart)
+            #st.line_chart(source)
+            st.pyplot()
                 
                 
                 
