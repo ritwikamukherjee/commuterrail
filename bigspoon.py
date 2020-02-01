@@ -41,7 +41,7 @@ def load_model(modelName):
 	model = pd.read_pickle(str(modelName + '.pkl'))    
 	return model
 
-####how to write an address pd.read_pickle(str('./models' + modelName + '.pkl'))
+
 
 # Load Model
 Light_GBM= 'Commuter_lightgbm' # 'Commuter_random_forest_regressor_trytry'      ###'Commuter_random_forest_regressor_trytry2';'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
@@ -53,25 +53,6 @@ data = load_model(dataName)
 
 st.title('Stay on Track!')
 
-
-##pkl_filename = 'C:/Users/ritwi/Documents/GitHub/commuterrail/REAL_DATA_v2.pkl'
-##with open(pkl_filename, 'rb') as file:
-##    loaded_data = pickle.load(file)
-#st.write(loaded_data)
-
-
-#user_input = st.sidebar.selectbox('Which commuter rail?', data['Trains'].unique())
-#user_input = st.text_input("Which commuter rail interests you? Enter a location like 'CR-Lowell', 'CR-Framingham'")
-#st.write(user_input)
-#user_input 
-#print(data)
-#user_input2=st.selectbox('Which commuter rail?', Data['Trains'].unique())
-#st.write(user_input2)
-
-
-#month = pd.to_datetime(prediction, format = '%j').month
-#day = pd.to_datetime(prediction, format = '%j').day
-#st.write(calendar.month_name[month], day, user_input2)
 
 #Windows of peak hours: 
 x1=datetime.time(7,00,00)
@@ -89,12 +70,10 @@ time_input = st.radio("Choose your time of travel:", ['12:00:00 AM', '2:00:00 AM
                                                         '4:00:00 PM', '6:00:00 PM','8:00:00 PM', '10:00:00 PM'])
 direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outbound'])
 
-lets_go = None
-lets_go = st.button ("Go")
 
 
 
-if lets_go is not None:
+if st.button ("Go"):
     Data = pd.DataFrame(data)
     today = datetime.datetime.today()
     my_date = date.today()
@@ -112,16 +91,6 @@ if lets_go is not None:
         if train_input == train:
             mask = Data["Trains"] == train
             Train_df = Data[mask]
-            #st.write(Train_df)
-            #if st.button('Click here'):
-            
-            #st.write(df)
-            #peak_input = st.sidebar.selectbox("Choose peak/non-peak hour", ['Peak', 'Non-peak'])
-            
-            #time_input = st.sidebar.selectbox("Choose your time of travel", ['12:00:00 AM', '2:00:00 AM', '4:00:00 AM', '6:00:00 AM', '8:00:00 AM', '10:00:00 AM', '12:00:00 PM', '2:00:00 PM',
-             #                                               '4:00:00 PM', '6:00:00 PM','8:00:00 PM', '10:00:00 PM'])                                              
-            
-            #direction_input = st.sidebar.selectbox("Choose inbound/outbound", ['Inbound', 'Outbound'])
             travel_time = pd.to_datetime(time_input)
             Day = today.day +1
             Hour = travel_time.hour
@@ -168,13 +137,9 @@ if lets_go is not None:
 
             prediction = model.predict(features)
             output =(prediction.item(0)) * 60
-                #mask=peakmask & outboundmask
-                #df_of_interest = Train_df[mask] #this has all the other variables in case we want to plot something
-            #st.write(today)
-            #prediction = model.predict(np.array([Train_df.iloc[-1,:].Reliability,Train_df.iloc[-1,:].Frequency,Train_df.iloc[-1,:].Peak,Train_df.iloc[-1,:].Lag]).reshape(1,4))
             st.write(f"{train_input} is going to be down for {round(output, 2)} minutes tomorrow in the next four hours.")
             
-            time_axis = np.array([Hour-2, Hour, Hour+2])
+            time_axis = np.array([Hour-2, Hour-1, Hour, Hour+1, Hour+2])
             #time_axis = pd.DataFrame({time_axis)
             y_axis = list()
             ticklist = list()
@@ -197,14 +162,14 @@ if lets_go is not None:
             #ax.set_xlabel("Time of day")
             #ax.set_ylabel("Duration of service interruption (min)") 
             
-            source = pd.DataFrame({'Hour of day': time_axis, 'Estimated service interruption (min)': y_axis2})
-            chart = alt.Chart(source).mark_line().encode(x='Hour of day',y='Estimated service interruption (min)').properties(width=900,
-                        height=500)
+            source = pd.DataFrame({'Hour': ticklist, 'Estimated service interruption (min)': y_axis2})
+            chart = alt.Chart(source).mark_bar().encode(x= alt.X('Hour', sort=None),y='Estimated service interruption (min)', color = alt.condition(
+                                alt.datum.Hour == f"{Hour}:00:00", alt.value('green'), alt.value('grey'))).properties(width=400,height=300)
     
 
             st.altair_chart(chart)
             #st.line_chart(source)
-            st.pyplot()
+            #st.pyplot()
                 
                 
                 
