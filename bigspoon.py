@@ -19,6 +19,9 @@ import matplotlib.pyplot as plt
 import joblib
 import lightgbm as lgb
 
+
+
+
 if len(sys.argv) > 1:
     folder = os.path.abspath(sys.argv[1])
 else:
@@ -64,10 +67,10 @@ x4=datetime.time(19,00,00)
 train_input = st.selectbox("Choose your commuter rail", data['Trains'].unique())
 
 st.header(f"So, you are traveling on {train_input} tomorrow.")
-st.write("What time were you thinking to travel?")
+st.write("What's the time and direction of your travel?")
             
-time_input = st.radio("Choose your time of travel:", ['12:00:00 AM', '2:00:00 AM', '4:00:00 AM', '6:00:00 AM', '8:00:00 AM', '10:00:00 AM', '12:00:00 PM', '2:00:00 PM',
-                                                        '4:00:00 PM', '6:00:00 PM','8:00:00 PM', '10:00:00 PM'])
+time_input = st.radio("Choose your time of travel:", ['12:00 AM', '2:00 AM', '4:00 AM', '6:00 AM', '8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM',
+                                                        '4:00 PM', '6:00 PM','8:00 PM', '10:00 PM', '11:00 PM'])
 direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outbound'])
 
 
@@ -130,28 +133,46 @@ if st.button ("Go"):
             #st.write(new_df)
             feature1= np.array([Day]).ravel()
             feature2=np.array([Hour]).ravel()
-            features3 = np.array([Reliability, Frequency,Peak,Outbound, Inbound, Temperature, Snow, Wind,Prcp,Ridership_2018,Lag,Snowlag]).reshape(1,12)
+            features3 = np.array([Reliability, Frequency,Peak,Outbound, Inbound, Temperature, Snow, Wind, Prcp, Ridership_2018, Lag, Snowlag]).reshape(1,12)
             features4 = new_df.iloc[0,:].values.reshape(1,34)
             features = np.concatenate((feature1, feature2,features3,features4), axis = None).reshape(1,48)
             
 
             prediction = model.predict(features)
             output =(prediction.item(0)) * 60
-            st.write(f"{train_input} is going to be down for {round(output, 2)} minutes tomorrow in the next four hours.")
+            time_axis = np.array([0, 4, 8, 12, 16, 20, 24])
+            bin_x = np.digitize(Hour,time_axis)
             
-            time_axis = np.array([Hour-2, Hour-1, Hour, Hour+1, Hour+2])
+            t1 = time_axis[bin_x-1]
+            t2 = time_axis[bin_x-1]+4
+           
+            d1 = datetime.datetime.strptime(f"{t1}:00", "%H:%M")
+            d11 = d1.strftime("%I:%M %p")
+            if t2 != 24:
+                d2 = datetime.datetime.strptime(f"{t2}:00", "%H:%M")
+                d21 = d2.strftime("%I:%M %p")
+            else: 
+                d2 = datetime.datetime.strptime(f"0:00", "%H:%M")
+                d21 = d2.strftime("%I:%M %p")
+            
+            
+            st.write(f"Based on historical data of service alerts, weather, and more recent repairs {train_input} may have service interruptions for {round(output, 2)} minutes between {d11} and {d21} tomorrow.")
+                            
             #time_axis = pd.DataFrame({time_axis)
+            
             y_axis = list()
             ticklist = list()
-            for i in range(0, len(time_axis)):
-                ticklist.append(f"{time_axis[i]}:00:00")
+            error = list()
+            for i in range(0, len(time_axis)-1):
+                ticklist.append(f"{time_axis[i]+2}:00")    #(f"{i*4}:00:00")  #(f"{time_axis[i]}:00:00")
                 feature_hour = time_axis[i] #numpy array
-                
                 #st.write((feature_hour))
                 features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
                 pred = model.predict(features_hour)
                 y_axis.append(pred.item(0)*60)
                 y_axis2 = np.array(y_axis)
+                error.append(0.132*60)
+                error2 = np.array(error)
                 #st.write(len(y_axis2.flatten()))
             #st.write(y_axis2)
             #fig, ax = plt.subplots()
@@ -161,17 +182,25 @@ if st.button ("Go"):
             #ax.set_xticklabels(ticklist)
             #ax.set_xlabel("Time of day")
             #ax.set_ylabel("Duration of service interruption (min)") 
+            ticklist_ampm = list()
             
-            source = pd.DataFrame({'Hour': ticklist, 'Estimated service interruption (min)': y_axis2})
-            chart = alt.Chart(source).mark_bar().encode(x= alt.X('Hour', sort=None),y='Estimated service interruption (min)', color = alt.condition(
-                                alt.datum.Hour == f"{Hour}:00:00", alt.value('green'), alt.value('grey'))).properties(width=400,height=300)
-    
+            # for i in range(0, len(ticklist)):
+                # f1= datetime.datetime.strptime(f"{ticklist[i]}", "%H:%M")
+                # ticklist_ampm.append(f1.strftime("%I:%M %p"))
+                # ticklist_ampm2 = np.array(ticklist_ampm)
+           
+            source = pd.DataFrame({'Time': ticklist, 'Estimated service interruption (min)': y_axis2, 'ci' :error2, 'ci1' : y_axis2-error2, 'ci2' :y_axis2+error2})
+            bars = alt.Chart(source).mark_bar().encode(x= alt.X('Time', sort=None),y='Estimated service interruption (min)', color = alt.condition(
+                                alt.datum.Time == f"{time_axis[bin_x-1]+2}:00", alt.value('green'), alt.value('grey'))).properties(width=500,height=400)
+  
+            error_bars = alt.Chart(source).mark_errorbar(extent = 'ci').encode(x= alt.X('Time', sort=None),y = 'Estimated service interruption (min)')
 
+            chart = (bars + error_bars).configure_axis(labelFontSize=15, titleFontSize=15)#.facet(column='site:N'))   
             st.altair_chart(chart)
             #st.line_chart(source)
             #st.pyplot()
                 
-                
+ 
                 
                             
 
