@@ -109,10 +109,10 @@ if st.button ("Go"):
                     dict_others[key] = [1] 
             Reliability = Train_df.iloc[-1,:].Reliability
             Frequency = Train_df.iloc[-1,:].Frequency
-            Temperature = 39.2
+            Temperature = 38
             Snow = 0
-            Wind =5.75
-            Prcp = 2
+            Wind =7
+            Prcp = 20
             Ridership_2018 = Train_df.iloc[-1,:].Ridership_2018
             Lag = Train_df.iloc[-1,:].Lag
             Snowlag = 0
@@ -156,7 +156,7 @@ if st.button ("Go"):
                 d21 = d2.strftime("%I:%M %p")
             
             
-            st.write(f"Based on historical data of service alerts, weather, and more recent repairs {train_input} may have service interruptions for {round(output, 2)} minutes between {d11} and {d21} tomorrow.")
+            st.write(f"Based on historical data of service alerts, weather, and more recent repairs, {train_input}, may have service interruptions for {round(output, 2)} minutes between {d11} and {d21}, tomorrow.")
                             
             #time_axis = pd.DataFrame({time_axis)
             
