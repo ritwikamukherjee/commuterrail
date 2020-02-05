@@ -67,11 +67,11 @@ x4=datetime.time(19,00,00)
 train_input = st.selectbox("Choose your commuter rail", data['Trains'].unique())
 
 st.header(f"So, you are traveling on {train_input} tomorrow.")
-st.write("What's the time and direction of your travel?")
-            
-time_input = st.radio("Choose your time of travel:", ['12:00 AM', '2:00 AM', '4:00 AM', '6:00 AM', '8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM',
+st.write("What's the direction and time of your travel?")
+direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outbound'])            
+time_input = st.radio("Choose your time of travel:", ['4:00 AM', '6:00 AM', '8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM',
                                                         '4:00 PM', '6:00 PM','8:00 PM', '10:00 PM', '11:00 PM'])
-direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outbound'])
+
 
 
 
@@ -109,10 +109,10 @@ if st.button ("Go"):
                     dict_others[key] = [1] 
             Reliability = Train_df.iloc[-1,:].Reliability
             Frequency = Train_df.iloc[-1,:].Frequency
-            Temperature = 38
+            Temperature = 33
             Snow = 0
-            Wind =7
-            Prcp = 20
+            Wind =6
+            Prcp = 79
             Ridership_2018 = Train_df.iloc[-1,:].Ridership_2018
             Lag = Train_df.iloc[-1,:].Lag
             Snowlag = 0
@@ -145,6 +145,7 @@ if st.button ("Go"):
             
             t1 = time_axis[bin_x-1]
             t2 = time_axis[bin_x-1]+4
+      
            
             d1 = datetime.datetime.strptime(f"{t1}:00", "%H:%M")
             d11 = d1.strftime("%I:%M %p")
@@ -156,8 +157,9 @@ if st.button ("Go"):
                 d21 = d2.strftime("%I:%M %p")
             
             
-            st.write(f"Based on historical data of service alerts, weather, and more recent repairs, {train_input}, may have service interruptions for {round(output, 2)} minutes between {d11} and {d21}, tomorrow.")
-                            
+            #st.write(f"Based on historical data of service alerts, weather, and more recent repairs, {train_input}, may have service interruptions for {round(output, 2)} minutes between {d11} and {d21}, tomorrow.")
+            st.write(f"{train_input} may have service interruptions tomorrow.")
+            st.write(f"Please plan to leave {round(output, 2)} minutes before {time_input} tomorrow.")             
             #time_axis = pd.DataFrame({time_axis)
             
             y_axis = list()
