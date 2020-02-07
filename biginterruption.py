@@ -25,7 +25,7 @@ if len(sys.argv) > 1:
 else:
     folder = os.path.abspath(os.getcwd())
 
-#@st.cache
+
 # Get filenames for all python files in this path, excluding this script
 thisFile = os.path.abspath(__file__)
 fileNames = []
@@ -57,10 +57,9 @@ x1=datetime.time(7,00,00)
 x2=datetime.time(9,00,00)
 x3=datetime.time(16,00,00)
 x4=datetime.time(19,00,00)
-#########
 
+#Inputs
 train_input = st.selectbox("Choose your commuter rail", data['Trains'].unique())
-
 st.header(f"So, you are traveling on {train_input} tomorrow.")
 st.write("What's the direction and time of your travel?")
 direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outbound'])            
@@ -68,10 +67,9 @@ time_input = st.radio("When do you plan to commute?", ['4:00 AM','6:00 AM', '8:0
                                                        
 
 minutes_threshold = st.radio("What is an acceptable wait time for you?", ['5 mins', '10 mins', '15 mins', '20 mins'])
-
 mins_thresh = minutes_threshold.split()[0]
-
-
+ 
+#Generate prediction for the inputs
 if st.button ("Go"):
     Data = pd.DataFrame(data)
     today = datetime.datetime.today()
@@ -150,20 +148,20 @@ if st.button ("Go"):
                 d2 = datetime.datetime.strptime(f"0:00", "%H:%M")
                 d21 = d2.strftime("%I:%M %p")
                      
-            #st.write(f"Based on historical data of service alerts, weather, and more recent repairs, {train_input}, may have service interruptions for {math.ceil(round(output,2))-8} minutes between {d11} and {d21}, tomorrow.")
-           
+            
+            #Make a plot for all the predictions
+            
             y_axis = list()
             ticklist = list()
             error = list()
             for i in range(0, len(time_axis)-1):
-                ticklist.append(f"{time_axis[i]+1}:00")    #(f"{i*4}:00:00")  #(f"{time_axis[i]}:00:00")
-                feature_hour = time_axis[i] #numpy array
+                ticklist.append(f"{time_axis[i]+1}:00")    
+                feature_hour = time_axis[i] 
                 features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
                 pred = model.predict(features_hour)
-                #st.write(pred)
                 y_axis.append(pred.item(0)*60-8)
                 y_axis2 = np.array(y_axis)  
-                error.append(0.08*60)#cannot incorporate
+                error.append(0.08*60)
                 error2 = np.array(error)
             ticklist_ampm = list()
             
@@ -184,30 +182,7 @@ if st.button ("Go"):
                 st.write(f"**Yey! You may not have to wait as much time!**")
             
             
-            #error_bars = alt.Chart(source).mark_errorbar(extent = 'ci').encode(x= alt.X('Time', sort=None),y = 'Estimated service interruption (min)')
-
-            #chart = (bars + error_bars).configure_axis(labelFontSize=15, titleFontSize=15)#.facet(column='site:N'))   
-            
-            
-            ####Bokeh Plots
-            
-            # source["Time Currently Selected"] = "No"
-            
-            # rowLoc = source[source['Time']==f"{time_axis[bin_x-1]+1}:00"].index.values.astype(int)[0]
-            # source["Time Currently Selected"][rowLoc] = "Yes"
-
-            
-            # plot_opts = dict(show_legend=False, color_index="Time Currently Selected", title="Service Interruptions in Commuter Rail", width=600, xlabel='Time Intervals', 
-                # ylabel='Estimated service interruption (min)', ylim=(0, 110), xrotation=90, tools=['hover'])
-
-            # style_opts = dict(box_color=hv.Cycle(['#30a2da', '#fc4f30']))
-
-            # bars = hv.Bars(source, hv.Dimension('Time'), ['Estimated service interruption (min)'])#, 'Course Currently Selected','Number of Users'])
-
-            # bars = bars.opts(plot=plot_opts, style=style_opts)
-
-            # st.write(hv.render(bars))
-
+        
   
            
                             
