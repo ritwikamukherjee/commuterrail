@@ -102,10 +102,10 @@ if st.button ("Go"):
                     dict_others[key] = [1] 
             Reliability = Train_df.iloc[-1,:].Reliability
             Frequency = Train_df.iloc[-1,:].Frequency
-            Temperature = 33
-            Snow = 5
-            Wind =6
-            Prcp = 79
+            Temperature = 35
+            Snow = 0
+            Wind =14
+            Prcp = 0
             Ridership_2018 = Train_df.iloc[-1,:].Ridership_2018
             Lag = Train_df.iloc[-1,:].Lag
             Snowlag = 5
