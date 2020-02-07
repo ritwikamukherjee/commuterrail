@@ -47,7 +47,7 @@ def load_model(modelName):
 # Load Model
 Light_GBM= 'Commuter_lightgbm_model' #'Commuter_lightgbm_2HR_try'  
 model = load_model(Light_GBM)
-dataName = 'REAL_DATA_2HRS_V13' 
+dataName = 'Commuter_Project_Dataset'#'REAL_DATA_2HRS_V13' 
 data = load_model(dataName)
 
 st.title('Stay on Track!')
