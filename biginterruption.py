@@ -18,9 +18,7 @@ import altair as alt
 import matplotlib.pyplot as plt
 import joblib
 import lightgbm as lgb
-
-
-
+import math 
 
 if len(sys.argv) > 1:
     folder = os.path.abspath(sys.argv[1])
@@ -45,15 +43,11 @@ def load_model(modelName):
 	return model
 
 
-
 # Load Model
-Light_GBM= 'Commuter_lightgbm_2HR_try'    #'Commuter_lightgbm_2hr_good'
-#'Commuter_lightgbm' # 'Commuter_random_forest_regressor_trytry'      ###'Commuter_random_forest_regressor_trytry2';'Commuter_LightGBMClassifier_try1'    #'Commuter_random_forest_classifier2'
+Light_GBM= 'Commuter_lightgbm_2HR_try'  
 model = load_model(Light_GBM)
-#model1=joblib.load(str(Random_forest + '.joblib'))
-dataName = 'REAL_DATA_2HRS_V13'      #'REAL_DATA_2HR_V11' #'REAL_DATA_v6'
+dataName = 'REAL_DATA_2HRS_V13' 
 data = load_model(dataName)
-
 
 st.title('Stay on Track!')
 
@@ -70,11 +64,12 @@ train_input = st.selectbox("Choose your commuter rail", data['Trains'].unique())
 st.header(f"So, you are traveling on {train_input} tomorrow.")
 st.write("What's the direction and time of your travel?")
 direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outbound'])            
-time_input = st.radio("Choose your time of travel:", ['4:00 AM','6:00 AM', '8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM',
-                                                        '4:00 PM', '6:00 PM','8:00 PM', '10:00 PM'])
+time_input = st.radio("When do you plan to commute?", ['4:00 AM','6:00 AM', '8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM','8:00 PM', '10:00 PM'])
+                                                       
 
+minutes_threshold = st.radio("What is an acceptable wait time for you?", ['5 mins', '10 mins', '15 mins', '20 mins'])
 
-
+mins_thresh = minutes_threshold.split()[0]
 
 
 if st.button ("Go"):
@@ -90,12 +85,10 @@ if st.button ("Go"):
 	'Monday':[0],	'Saturday':[0], 'Sunday':[0], 'Thursday':[0], 'Tuesday':[0], 'Wednesday':[0]}
     
     Train_df = pd.DataFrame()
-    #Train_df = pd.DataFrame()
     for train in set(data['Trains']):
         if train_input == train:
             mask = Data["Trains"] == train
             Train_df = Data[mask]
-            #st.write(Train_df)
             travel_time = pd.to_datetime(time_input)
             Day = today.day +1
             Hour = travel_time.hour
@@ -132,7 +125,6 @@ if st.button ("Go"):
             new_df1 = pd.DataFrame(dict_trains)
             new_df2 = pd.DataFrame(dict_others)            
             new_df = pd.concat([new_df1, new_df2], axis=1)
-            #st.write(new_df)
             feature1= np.array([Day]).ravel()
             feature2=np.array([Hour]).ravel()
             features3 = np.array([Reliability, Frequency,Peak,Outbound, Inbound, Temperature, Snow, Wind, Prcp, Ridership_2018, Lag, Snowlag]).reshape(1,12)
@@ -141,10 +133,8 @@ if st.button ("Go"):
             
 
             prediction = model.predict(features)
-            
-            #st.write(prediction)
-            output =(prediction.item(0)) * 60
-            time_axis = np.array([0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 24])
+            output =prediction.item(0) * 60
+            time_axis = np.array([4, 6, 8, 10, 12, 14, 16, 18, 22, 24])
             bin_x = np.digitize(Hour,time_axis)
             
             t1 = time_axis[bin_x-1]
@@ -159,80 +149,67 @@ if st.button ("Go"):
             else: 
                 d2 = datetime.datetime.strptime(f"0:00", "%H:%M")
                 d21 = d2.strftime("%I:%M %p")
-            
-            
-            #st.write(f"Based on historical data of service alerts, weather, and more recent repairs, {train_input}, may have service interruptions for {round(output, 2)} minutes between {d11} and {d21}, tomorrow.")
-            st.write(f"{train_input} may have service interruptions tomorrow.")
-            st.write(f"Please plan to leave {round(output-8,2)} minutes before {time_input} tomorrow.")             
-            #time_axis = pd.DataFrame({time_axis)
-            
+                     
+            #st.write(f"Based on historical data of service alerts, weather, and more recent repairs, {train_input}, may have service interruptions for {math.ceil(round(output,2))-8} minutes between {d11} and {d21}, tomorrow.")
+           
             y_axis = list()
             ticklist = list()
             error = list()
             for i in range(0, len(time_axis)-1):
                 ticklist.append(f"{time_axis[i]+1}:00")    #(f"{i*4}:00:00")  #(f"{time_axis[i]}:00:00")
                 feature_hour = time_axis[i] #numpy array
-                #st.write(feature_hour)
-                #st.write((feature_hour))
                 features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
                 pred = model.predict(features_hour)
                 #st.write(pred)
-                y_axis.append(pred.item(0)*60 -8)
+                y_axis.append(pred.item(0)*60-8)
                 y_axis2 = np.array(y_axis)  
                 error.append(0.08*60)#cannot incorporate
                 error2 = np.array(error)
-                #st.write(len(y_axis2.flatten()))
-            #st.write(y_axis2)
-            #fig, ax = plt.subplots()
-            #ax.plot(time_axis, y_axis2)
-            ##ax.set_xlim([0,25])
-            #ax.set_ylim([0,120])
-            #ax.set_xticklabels(ticklist)
-            #ax.set_xlabel("Time of day")
-            #ax.set_ylabel("Duration of service interruption (min)") 
             ticklist_ampm = list()
             
-            # for i in range(0, len(ticklist)):
-                # f1= datetime.datetime.strptime(f"{ticklist[i]}", "%H:%M")
-                # ticklist_ampm.append(f1.strftime("%I:%M %p"))
-                # ticklist_ampm2 = np.array(ticklist_ampm)
-           
-            source = pd.DataFrame({'Time': ticklist, 'Estimated service interruption (min)': y_axis2, 'ci' :error2, 'ci1' : y_axis2-error2, 'ci2' :y_axis2+error2})
-            bars = alt.Chart(source).mark_bar().encode(x= alt.X('Time', sort=None),y='Estimated service interruption (min)', color = alt.condition(
-                                alt.datum.Time == f"{time_axis[bin_x-1]+1}:00", alt.value('green'), alt.value('grey'))).properties(width=500,height=400)
+            time_labels = list(['4 AM - 6 AM', '6 AM - 8 AM','8 AM - 10 AM','10 AM - 12 PM',
+                '12 PM - 2 PM','2 PM - 4 PM', '4 PM - 8 PM', '8 PM - 10 PM', '10 PM - 12 AM'])
+            source = pd.DataFrame({'Time': ticklist, 'Estimated service interruption (min)': y_axis2, 'ci' :error2, 'ci1' : y_axis2-error2, 'ci2' :y_axis2+error2, 'ranges':time_labels, 'Wait time':float(mins_thresh) })
+            bars = alt.Chart(source, title = "Hours of Service Interruption").mark_bar().encode(x= alt.X('ranges', sort=None, axis=alt.Axis(title="Time intervals", labelAngle =-45, labelSeparation = 20)),y='Estimated service interruption (min)', color = alt.condition(
+                                alt.datum.Time == f"{time_axis[bin_x-1]+1}:00", alt.value('green'), alt.value('grey'))).properties(width=600,height=500)
+            
+            rule = alt.Chart(source).mark_rule(color='red').encode(y=alt.Y('Wait time', axis=alt.Axis(title="Estimated service interruption (min)"))).properties(width=600,height=500)
+            combined = bars+rule
+            st.altair_chart(combined)         
+            
+            st.write(f"**{train_input} may have service interruptions tomorrow.**")
+            if (math.ceil(round(output,2)))-8 > float(mins_thresh):
+                st.write(f"**Please plan to wait another {math.ceil(round(output,2))-8-float(mins_thresh)} minutes at {time_input} tomorrow.**")    
+            else: 
+                st.write(f"**Yey! You may not have to wait as much time!**")
+            
+            
+            #error_bars = alt.Chart(source).mark_errorbar(extent = 'ci').encode(x= alt.X('Time', sort=None),y = 'Estimated service interruption (min)')
+
+            #chart = (bars + error_bars).configure_axis(labelFontSize=15, titleFontSize=15)#.facet(column='site:N'))   
+            
+            
+            ####Bokeh Plots
+            
+            # source["Time Currently Selected"] = "No"
+            
+            # rowLoc = source[source['Time']==f"{time_axis[bin_x-1]+1}:00"].index.values.astype(int)[0]
+            # source["Time Currently Selected"][rowLoc] = "Yes"
+
+            
+            # plot_opts = dict(show_legend=False, color_index="Time Currently Selected", title="Service Interruptions in Commuter Rail", width=600, xlabel='Time Intervals', 
+                # ylabel='Estimated service interruption (min)', ylim=(0, 110), xrotation=90, tools=['hover'])
+
+            # style_opts = dict(box_color=hv.Cycle(['#30a2da', '#fc4f30']))
+
+            # bars = hv.Bars(source, hv.Dimension('Time'), ['Estimated service interruption (min)'])#, 'Course Currently Selected','Number of Users'])
+
+            # bars = bars.opts(plot=plot_opts, style=style_opts)
+
+            # st.write(hv.render(bars))
+
   
-            error_bars = alt.Chart(source).mark_errorbar(extent = 'ci').encode(x= alt.X('Time', sort=None),y = 'Estimated service interruption (min)')
-
-            chart = (bars + error_bars).configure_axis(labelFontSize=15, titleFontSize=15)#.facet(column='site:N'))   
-            st.altair_chart(chart)
-            #st.line_chart(source)
-            #st.pyplot()
-                
- 
-                
-                            
-
-                    ###Should do it for all hours and plot estimations
-                    # st.write(sns.scatterplot(x = range(0,24), y = prediction.item(0)))                    
-                    # chart_data = pd.DataFrame(np.random.randn(24, 3),columns=['a', 'b', 'c'])
-                    # st.line_chart(chart_data)           
-          
-                                    
-
-
-
+           
                             
                             
-                            
-                            
-                            
-
-#def visualize_data(df, x_axis, y_axis):
-#    graph = alt.Chart(df).mark_circle(size=60).encode(
-#        x=x_axis,
-#        y=y_axis,
-#        color='Origin',
-#        tooltip=['Name', 'Origin', 'Horsepower', 'Miles_per_Gallon']
-#    ).interactive()
-
-#   st.write(graph)
+               
