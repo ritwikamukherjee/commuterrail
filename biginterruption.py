@@ -20,6 +20,9 @@ import joblib
 import lightgbm as lgb
 import math 
 
+
+
+
 if len(sys.argv) > 1:
     folder = os.path.abspath(sys.argv[1])
 else:
@@ -168,18 +171,19 @@ if st.button ("Go"):
             time_labels = list(['4 AM - 6 AM', '6 AM - 8 AM','8 AM - 10 AM','10 AM - 12 PM',
                 '12 PM - 2 PM','2 PM - 4 PM', '4 PM - 8 PM', '8 PM - 10 PM', '10 PM - 12 AM'])
             source = pd.DataFrame({'Time': ticklist, 'Estimated service interruption (min)': y_axis2, 'ci' :error2, 'ci1' : y_axis2-error2, 'ci2' :y_axis2+error2, 'ranges':time_labels, 'Wait time':float(mins_thresh) })
-            bars = alt.Chart(source, title = "Hours of Service Interruption").mark_bar().encode(x= alt.X('ranges', sort=None, axis=alt.Axis(title="Time intervals", labelAngle =-45, labelSeparation = 20)),y='Estimated service interruption (min)', color = alt.condition(
-                                alt.datum.Time == f"{time_axis[bin_x-1]+1}:00", alt.value('green'), alt.value('grey'))).properties(width=600,height=500)
+            bars = alt.Chart(source, title = "Estimated Service Interruptions").mark_bar().encode(x= alt.X('ranges', sort=None, axis=alt.Axis(title="Time intervals", labelAngle =-45, labelSeparation = 20 ,labelFontSize=14, titleFontSize=18)),y=alt.Y('Estimated service interruption (min)', axis = alt.Axis(labelFontSize=16, titleFontSize=18)) , color = alt.condition(
+                                alt.datum.Time == f"{time_axis[bin_x-1]+1}:00", alt.value('#b500aaff'), alt.value('#ccc9ccff'))).properties(width=600,height=500)
             
-            rule = alt.Chart(source).mark_rule(color='red').encode(y=alt.Y('Wait time', axis=alt.Axis(title="Estimated service interruption (min)"))).properties(width=600,height=500)
-            combined = bars+rule
+            rule = alt.Chart(source).mark_rule(color='black').encode(y=alt.Y('Wait time', axis=alt.Axis(title="Estimated service interruption (min)", titleFontSize=18))).properties(width=600,height=500)
+            combined = (bars+rule).configure_title(fontSize=20)
+            
             st.altair_chart(combined)         
             
-            st.write(f"**{train_input} may have service interruptions tomorrow.**")
+            st.header(f"{train_input} may have service interruptions tomorrow.")
             if (math.ceil(round(output,2)))-8 > float(mins_thresh):
-                st.write(f"**Please plan to wait another {math.ceil(round(output,2))-8-float(mins_thresh)} minutes at {time_input} tomorrow.**")    
+                st.header(f"Please expect {math.ceil(round(output,2))-8-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
             else: 
-                st.write(f"**Yey! You may not have to wait as much time!**")
+                st.header(f"You may not have to wait as much time!")
             
             
         
