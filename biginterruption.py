@@ -45,9 +45,9 @@ def load_model(modelName):
 
 
 # Load Model
-Light_GBM= 'Commuter_lightgbm_model' #'Commuter_lightgbm_2HR_try'  
+Light_GBM= 'Commuter_lightgbm_model_2hrs'#'Commuter_lightgbm_model'
 model = load_model(Light_GBM)
-dataName = 'Commuter_Project_Dataset'#'REAL_DATA_2HRS_V13' 
+dataName = 'Commuter_Project_Dataset'
 data = load_model(dataName)
 
 st.title('Stay on Track!')
@@ -67,7 +67,7 @@ direction_input = st.radio("Choose your direction of travel:", ['Inbound', 'Outb
 time_input = st.radio("When do you plan to commute?", ['4:00 AM','6:00 AM', '8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM','8:00 PM', '10:00 PM'])
                                                        
 
-minutes_threshold = st.radio("What is an acceptable wait time for you?", ['5 mins', '10 mins', '15 mins', '20 mins'])
+minutes_threshold = st.radio("What is an acceptable wait time for you?", ['1 min', '2 mins', '5 mins', '10 mins', '15 mins'])
 mins_thresh = minutes_threshold.split()[0]
  
 #Generate prediction for the inputs
@@ -103,24 +103,55 @@ if st.button ("Go"):
                     dict_others[key] = [1] 
             Reliability = Train_df.iloc[-1,:].Reliability
             Frequency = Train_df.iloc[-1,:].Frequency
-            Temperature = 35
+            Temperature = 40
             Snow = 0
-            Wind =14
+            Wind =20
             Prcp = 0
             Ridership_2018 = Train_df.iloc[-1,:].Ridership_2018
             Lag = Train_df.iloc[-1,:].Lag
-            Snowlag = 5
+            Snowlag = 0
            
             if (x1.hour <= travel_time.hour <= x2.hour) or (x3.hour <= travel_time.hour <= x4.hour):
                 Peak = 1
             else:
                 Peak = 0
-            if direction_input == 'Outbound':
-                Outbound = 1
-                Inbound = 0
-            if direction_input == 'Inbound':
-                Outbound = 0
-                Inbound = 1
+                
+            if train == 'CR-Providence': 
+                if direction_input == 'Outbound':
+                    Outbound = 0.2
+                    Inbound = 0
+                if direction_input == 'Inbound':
+                    Outbound = 0
+                    Inbound = 0.2
+            elif train == 'CR-Needham':
+                if direction_input == 'Outbound':
+                    Outbound = 0.2
+                    Inbound = 0
+                if direction_input == 'Inbound':
+                    Outbound = 0
+                    Inbound = 0.2
+            elif train == 'CR-Franklin':
+                if direction_input == 'Outbound':
+                    Outbound = 0.2
+                    Inbound = 0
+                if direction_input == 'Inbound':
+                    Outbound = 0
+                    Inbound = 0.2
+            elif train == 'CR-Fairmount':
+                if direction_input == 'Outbound':
+                    Outbound = 0.2
+                    Inbound = 0
+                if direction_input == 'Inbound':
+                    Outbound = 0
+                    Inbound = 0.2                    
+            else:        
+                if direction_input == 'Outbound':
+                    Outbound = 1
+                    Inbound = 0.5
+                if direction_input == 'Inbound':
+                    Outbound = 0.5
+                    Inbound = 1
+                    
             new_df1 = pd.DataFrame(dict_trains)
             new_df2 = pd.DataFrame(dict_others)            
             new_df = pd.concat([new_df1, new_df2], axis=1)
@@ -130,7 +161,14 @@ if st.button ("Go"):
             features4 = new_df.iloc[0,:].values.reshape(1,34)
             features = np.concatenate((feature1, feature2,features3,features4), axis = None).reshape(1,48)
             
-
+            ####Evaluating inputs
+            #st.write(feature1)
+            #st.write(feature2)
+            #st.write(features3)
+            #st.write(features4)
+            ####
+         
+       
             prediction = model.predict(features)
             output =prediction.item(0) * 60
             time_axis = np.array([4, 6, 8, 10, 12, 14, 16, 18, 22, 24])
@@ -160,7 +198,7 @@ if st.button ("Go"):
                 feature_hour = time_axis[i] 
                 features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
                 pred = model.predict(features_hour)
-                y_axis.append(pred.item(0)*60-8)
+                y_axis.append(pred.item(0)*60-10)
                 y_axis2 = np.array(y_axis)  
                 error.append(0.08*60)
                 error2 = np.array(error)
@@ -178,15 +216,18 @@ if st.button ("Go"):
             st.altair_chart(combined)         
             
             st.header(f"{train_input} may have service interruptions tomorrow.")
-            if (math.ceil(round(output,2)))-8 > float(mins_thresh):
-                st.header(f"Please expect {math.ceil(round(output,2))-8-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
+            if (math.ceil(round(output,2)))-10 > float(mins_thresh):
+                st.header(f"Please expect {math.ceil(round(output,2))-10-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
             else: 
                 st.header(f"You may not have to wait as much time!")
             
-            
-        
-  
-           
-                            
-                            
+
+# from bokeh.models.widgets import Div
+
+# if st.button('Go to Streamlit'):
+    # js = "window.open('https://www.streamlit.io/')"  # New tab or window
+    # js = "window.location.href = 'https://www.google.com/'"  # Current tab
+    # html = '<img src onerror="{}">'.format(js)
+    # div = Div(text=html)
+    # st.bokeh_chart(div)                    
                
