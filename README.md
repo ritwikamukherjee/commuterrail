@@ -12,5 +12,5 @@ This would help commuters make informed decisions about their travel plans.
 
 Dependencies can be found in the environment.yml file, and this file can be used to create a conda environment with
 ```console
-foo@bar:~$ conda env create -f environment.yml
+~$ conda env create -f environment.yml
 ```
