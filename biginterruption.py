@@ -45,9 +45,9 @@ def load_model(modelName):
 
 
 # Load Model
-Light_GBM= 'Commuter_lightgbm_model_2hrs'#'Commuter_lightgbm_model'
+Light_GBM= 'Commuter_lightgbm_model_2hrs'#'Commuter_lightgbm_model_2hrs_directionfix'#'Commuter_lightgbm_model'
 model = load_model(Light_GBM)
-dataName = 'Commuter_Project_Dataset'
+dataName = 'Commuter_Project_Dataset' #'DATA_Directionfix'#
 data = load_model(dataName)
 
 st.title('Stay on Track!')
@@ -115,41 +115,42 @@ if st.button ("Go"):
                 Peak = 1
             else:
                 Peak = 0
-                
+            
+            
             if train == 'CR-Providence': 
                 if direction_input == 'Outbound':
-                    Outbound = 0.2
+                    Outbound = 0.5
                     Inbound = 0
                 if direction_input == 'Inbound':
                     Outbound = 0
-                    Inbound = 0.2
+                    Inbound = 0.5
             elif train == 'CR-Needham':
                 if direction_input == 'Outbound':
-                    Outbound = 0.2
+                    Outbound = 0.1
                     Inbound = 0
                 if direction_input == 'Inbound':
                     Outbound = 0
-                    Inbound = 0.2
+                    Inbound = 0.1
             elif train == 'CR-Franklin':
                 if direction_input == 'Outbound':
-                    Outbound = 0.2
+                    Outbound = 0.1
                     Inbound = 0
                 if direction_input == 'Inbound':
                     Outbound = 0
-                    Inbound = 0.2
+                    Inbound = 0.1
             elif train == 'CR-Fairmount':
                 if direction_input == 'Outbound':
-                    Outbound = 0.2
+                    Outbound = 0.1
                     Inbound = 0
                 if direction_input == 'Inbound':
                     Outbound = 0
-                    Inbound = 0.2                    
+                    Inbound = 0.1                    
             else:        
                 if direction_input == 'Outbound':
                     Outbound = 1
-                    Inbound = 0.5
+                    Inbound = 0.3
                 if direction_input == 'Inbound':
-                    Outbound = 0.5
+                    Outbound = 0.3
                     Inbound = 1
                     
             new_df1 = pd.DataFrame(dict_trains)
@@ -198,7 +199,7 @@ if st.button ("Go"):
                 feature_hour = time_axis[i] 
                 features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
                 pred = model.predict(features_hour)
-                y_axis.append(pred.item(0)*60-10)
+                y_axis.append(pred.item(0)*60)
                 y_axis2 = np.array(y_axis)  
                 error.append(0.08*60)
                 error2 = np.array(error)
@@ -216,11 +217,12 @@ if st.button ("Go"):
             st.altair_chart(combined)         
             
             st.header(f"{train_input} may have service interruptions tomorrow.")
-            if (math.ceil(round(output,2)))-10 > float(mins_thresh):
-                st.header(f"Please expect {math.ceil(round(output,2))-10-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
+            if (math.ceil(round(output,2))) > float(mins_thresh):
+                st.header(f"Please expect {math.ceil(round(output,2))-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
             else: 
                 st.header(f"You may not have to wait as much time!")
-            
+
+st.markdown("""<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRj_46yGKKc8NyqZivhjub_aanl3-uX8pcZkdCRk90Taq_3h2C7jOU8HTljaj6haGJw-xwil8auZLoc/embed?start=false&loop=false&delayms=3000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>""",unsafe_allow_html = True)
 
 # from bokeh.models.widgets import Div
 
