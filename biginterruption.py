@@ -199,7 +199,7 @@ if st.button ("Go"):
                 feature_hour = time_axis[i] 
                 features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
                 pred = model.predict(features_hour)
-                y_axis.append(pred.item(0)*60)
+                y_axis.append(pred.item(0)*60-10)
                 y_axis2 = np.array(y_axis)  
                 error.append(0.08*60)
                 error2 = np.array(error)
@@ -217,8 +217,8 @@ if st.button ("Go"):
             st.altair_chart(combined)         
             
             st.header(f"{train_input} may have service interruptions tomorrow.")
-            if (math.ceil(round(output,2))) > float(mins_thresh):
-                st.header(f"Please expect {math.ceil(round(output,2))-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
+            if (math.ceil(round(output,2)))-10 > float(mins_thresh):
+                st.header(f"Please expect {math.ceil(round(output,2))-10-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
             else: 
                 st.header(f"You may not have to wait as much time!")
 
