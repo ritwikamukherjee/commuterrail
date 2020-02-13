@@ -216,13 +216,14 @@ if st.button ("Go"):
             
             st.altair_chart(combined)         
             
-            st.header(f"{train_input} may have service interruptions tomorrow.")
+            st.header(f"{train_input} is estimated to have service interruptions tomorrow based on historic service alerts data and real-time weather forecast.")
             if (math.ceil(round(output,2)))-10 > float(mins_thresh):
                 st.header(f"Please expect {math.ceil(round(output,2))-10-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
             else: 
-                st.header(f"You may not have to wait as much time!")
+                st.header(f"Your chosen wait time falls within the estimated duration of service interruption at {time_input} tomorrow.")
+                
 
-st.markdown("""<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRj_46yGKKc8NyqZivhjub_aanl3-uX8pcZkdCRk90Taq_3h2C7jOU8HTljaj6haGJw-xwil8auZLoc/embed?start=false&loop=false&delayms=3000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>""",unsafe_allow_html = True)
+#st.markdown("""<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRj_46yGKKc8NyqZivhjub_aanl3-uX8pcZkdCRk90Taq_3h2C7jOU8HTljaj6haGJw-xwil8auZLoc/embed?start=false&loop=false&delayms=3000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>""",unsafe_allow_html = True)
 
 # from bokeh.models.widgets import Div
 
