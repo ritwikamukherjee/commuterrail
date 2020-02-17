@@ -59,6 +59,8 @@ x2=datetime.time(9,00,00)
 x3=datetime.time(16,00,00)
 x4=datetime.time(19,00,00)
 
+#st.markdown("""<iframe src="https://drive.google.com/file/d/1YpkDlNdN9nxVaBY36O_HIDTTxbC1GDLH/preview" width="640" height="480"></iframe>""",unsafe_allow_html = True)
+
 #Inputs
 train_input = st.selectbox("Choose your commuter rail", data['Trains'].unique())
 st.header(f"So, you are traveling on {train_input} tomorrow.")
@@ -103,13 +105,13 @@ if st.button ("Go"):
                     dict_others[key] = [1] 
             Reliability = Train_df.iloc[-1,:].Reliability
             Frequency = Train_df.iloc[-1,:].Frequency
-            Temperature = 40
+            Temperature = 30
             Snow = 0
-            Wind =20
-            Prcp = 0
+            Wind =10
+            Prcp = 1
             Ridership_2018 = Train_df.iloc[-1,:].Ridership_2018
             Lag = Train_df.iloc[-1,:].Lag
-            Snowlag = 0
+            Snowlag = 1
            
             if (x1.hour <= travel_time.hour <= x2.hour) or (x3.hour <= travel_time.hour <= x4.hour):
                 Peak = 1
@@ -120,9 +122,9 @@ if st.button ("Go"):
             if train == 'CR-Providence': 
                 if direction_input == 'Outbound':
                     Outbound = 0.5
-                    Inbound = 0
+                    Inbound = 0.1
                 if direction_input == 'Inbound':
-                    Outbound = 0
+                    Outbound = 0.1
                     Inbound = 0.5
             elif train == 'CR-Needham':
                 if direction_input == 'Outbound':
@@ -172,7 +174,7 @@ if st.button ("Go"):
        
             prediction = model.predict(features)
             output =prediction.item(0) * 60
-            time_axis = np.array([4, 6, 8, 10, 12, 14, 16, 18, 22, 24])
+            time_axis = np.array([4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24])
             bin_x = np.digitize(Hour,time_axis)
             
             t1 = time_axis[bin_x-1]
@@ -199,38 +201,29 @@ if st.button ("Go"):
                 feature_hour = time_axis[i] 
                 features_hour = np.concatenate((feature1, feature_hour,features3,features4), axis = None).reshape(1,48)
                 pred = model.predict(features_hour)
-                y_axis.append(pred.item(0)*60-10)
+                y_axis.append(pred.item(0)*60-12)
                 y_axis2 = np.array(y_axis)  
                 error.append(0.08*60)
                 error2 = np.array(error)
             ticklist_ampm = list()
             
             time_labels = list(['4 AM - 6 AM', '6 AM - 8 AM','8 AM - 10 AM','10 AM - 12 PM',
-                '12 PM - 2 PM','2 PM - 4 PM', '4 PM - 8 PM', '8 PM - 10 PM', '10 PM - 12 AM'])
+                '12 PM - 2 PM','2 PM - 4 PM', '4 PM - 6 PM', '6 PM - 8 PM', '8 PM - 10 PM', '10 PM - 12 AM'])
             source = pd.DataFrame({'Time': ticklist, 'Estimated service interruption (min)': y_axis2, 'ci' :error2, 'ci1' : y_axis2-error2, 'ci2' :y_axis2+error2, 'ranges':time_labels, 'Wait time':float(mins_thresh) })
             bars = alt.Chart(source, title = "Estimated Service Interruptions").mark_bar().encode(x= alt.X('ranges', sort=None, axis=alt.Axis(title="Time intervals", labelAngle =-45, labelSeparation = 20 ,labelFontSize=14, titleFontSize=18)),y=alt.Y('Estimated service interruption (min)', axis = alt.Axis(labelFontSize=16, titleFontSize=18)) , color = alt.condition(
-                                alt.datum.Time == f"{time_axis[bin_x-1]+1}:00", alt.value('#b500aaff'), alt.value('#ccc9ccff'))).properties(width=600,height=500)
+                                alt.datum.Time == f"{time_axis[bin_x-1]+1}:00", alt.value('#b500aaff'), alt.value('#ccc9ccff'))).properties(width=600,height=500) #c83771ff
             
             rule = alt.Chart(source).mark_rule(color='black').encode(y=alt.Y('Wait time', axis=alt.Axis(title="Estimated service interruption (min)", titleFontSize=18))).properties(width=600,height=500)
             combined = (bars+rule).configure_title(fontSize=20)
             
             st.altair_chart(combined)         
             
-            st.header(f"{train_input} is estimated to have service interruptions tomorrow based on historic service alerts data and real-time weather forecast.")
-            if (math.ceil(round(output,2)))-10 > float(mins_thresh):
-                st.header(f"Please expect {math.ceil(round(output,2))-10-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
+            st.write(f"{train_input} is estimated to have service interruptions tomorrow based on historic service alerts data and real-time weather forecast.")
+            if (math.ceil(round(output,2)))-12 > float(mins_thresh):
+                st.write(f"Please expect {math.ceil(round(output,2))-12-float(mins_thresh)} minutes of additional wait time at {time_input} tomorrow.")    
             else: 
-                st.header(f"Your chosen wait time falls within the estimated duration of service interruption at {time_input} tomorrow.")
+                st.write(f"Your chosen wait time falls within the estimated duration of service interruption at {time_input} tomorrow.")
                 
 
 #st.markdown("""<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRj_46yGKKc8NyqZivhjub_aanl3-uX8pcZkdCRk90Taq_3h2C7jOU8HTljaj6haGJw-xwil8auZLoc/embed?start=false&loop=false&delayms=3000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>""",unsafe_allow_html = True)
 
-# from bokeh.models.widgets import Div
-
-# if st.button('Go to Streamlit'):
-    # js = "window.open('https://www.streamlit.io/')"  # New tab or window
-    # js = "window.location.href = 'https://www.google.com/'"  # Current tab
-    # html = '<img src onerror="{}">'.format(js)
-    # div = Div(text=html)
-    # st.bokeh_chart(div)                    
-               
