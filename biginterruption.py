@@ -105,13 +105,13 @@ if st.button ("Go"):
                     dict_others[key] = [1] 
             Reliability = Train_df.iloc[-1,:].Reliability
             Frequency = Train_df.iloc[-1,:].Frequency
-            Temperature = 30
+            Temperature = 32
             Snow = 0
-            Wind =10
-            Prcp = 1
+            Wind =5
+            Prcp = 0
             Ridership_2018 = Train_df.iloc[-1,:].Ridership_2018
             Lag = Train_df.iloc[-1,:].Lag
-            Snowlag = 1
+            Snowlag = 0
            
             if (x1.hour <= travel_time.hour <= x2.hour) or (x3.hour <= travel_time.hour <= x4.hour):
                 Peak = 1
