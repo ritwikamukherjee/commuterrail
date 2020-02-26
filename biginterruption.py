@@ -108,7 +108,7 @@ if st.button ("Go"):
             Temperature = 43
             Snow = 0
             Wind = 17
-            Prcp = 60
+            Prcp = 0.90
             Ridership_2018 = Train_df.iloc[-1,:].Ridership_2018
             Lag = Train_df.iloc[-1,:].Lag
             Snowlag = 0
